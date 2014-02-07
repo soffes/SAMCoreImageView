@@ -60,16 +60,7 @@
 #pragma mark - NSObject
 
 - (void)dealloc {
-    glDeleteFramebuffers(1, &_frameBuffer);
-    _frameBuffer = 0;
-
-    glDeleteRenderbuffers(1, &_renderBuffer);
-    _renderBuffer = 0;
-
-	if (_depthBuffer) {
-		glDeleteRenderbuffers(1, &_depthBuffer);
-		_depthBuffer = 0;
-	}
+    [self tearDown];
 }
 
 
@@ -83,46 +74,30 @@
 - (instancetype)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
 		self.userInteractionEnabled = NO;
-		
+
 		CAEAGLLayer *eaglLayer = (CAEAGLLayer *)self.layer;
 		eaglLayer.opaque = YES;
 
-		[self eaglContext];
-
-		glGenFramebuffers(1, &_frameBuffer);
-		glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
-
-		glGenRenderbuffers(1, &_renderBuffer);
-		glBindRenderbuffer(GL_RENDERBUFFER, _renderBuffer);
-		[self.eaglContext renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer *)self.layer];
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, _renderBuffer);
-
-		glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &_backingWidth);
-		glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &_backingHeight);
-
-		glGenRenderbuffers(1, &_depthBuffer);
-		glBindRenderbuffer(GL_RENDERBUFFER, _depthBuffer);
-
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, _backingWidth, _backingHeight);
-
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthBuffer);
-
-		glBindRenderbuffer(GL_RENDERBUFFER, _renderBuffer);
-
-		GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER) ;
-		if(status != GL_FRAMEBUFFER_COMPLETE) {
-			NSLog(@"ERROR: Failed to make complete framebuffer object %x", status);
-		} else {
-			glViewport(0, 0, _backingWidth, _backingHeight);
-			[self drawView];
-		}
+		[self setup];
 	}
 	return self;
 }
 
 
-- (void)drawRect:(CGRect)rect {
-	// Do nothing. This makes the window set the correct content scale for us.
+- (void)willMoveToWindow:(UIWindow *)newWindow {
+	[super willMoveToWindow:newWindow];
+	self.contentScaleFactor = newWindow.screen.scale;
+
+	[self tearDown];
+	[self setup];
+}
+
+
+- (void)layoutSubviews {
+	if (_backingWidth != self.bounds.size.width || _backingHeight != self.bounds.size.height) {
+		[self tearDown];
+		[self setup];
+	}
 }
 
 
@@ -138,7 +113,7 @@
 #pragma mark - Private
 
 - (void)drawView {
-    if (!self.image) {
+    if (!self.image || !self.window) {
         return;
     }
 
@@ -153,6 +128,61 @@
 
     glBindRenderbuffer(GL_RENDERBUFFER, _renderBuffer);
     [self.eaglContext presentRenderbuffer:GL_RENDERBUFFER];
+}
+
+
+- (void)setup {
+	if (!self.window) {
+		return;
+	}
+
+	[self eaglContext];
+
+	glGenFramebuffers(1, &_frameBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
+
+	glGenRenderbuffers(1, &_renderBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, _renderBuffer);
+	[self.eaglContext renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer *)self.layer];
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, _renderBuffer);
+
+	glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &_backingWidth);
+	glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &_backingHeight);
+
+	glGenRenderbuffers(1, &_depthBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, _depthBuffer);
+
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, _backingWidth, _backingHeight);
+
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthBuffer);
+
+	glBindRenderbuffer(GL_RENDERBUFFER, _renderBuffer);
+
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER) ;
+	if(status != GL_FRAMEBUFFER_COMPLETE) {
+		NSLog(@"ERROR: Failed to make complete framebuffer object %x", status);
+	} else {
+		glViewport(0, 0, _backingWidth, _backingHeight);
+		[self drawView];
+	}
+}
+
+
+- (void)tearDown {
+	if (_frameBuffer) {
+		glDeleteFramebuffers(1, &_frameBuffer);
+		_frameBuffer = 0;
+	}
+
+	if (_renderBuffer) {
+		glDeleteRenderbuffers(1, &_renderBuffer);
+		_renderBuffer = 0;
+	}
+
+	if (_depthBuffer) {
+		glDeleteRenderbuffers(1, &_depthBuffer);
+		_depthBuffer = 0;
+	}
 }
 
 @end

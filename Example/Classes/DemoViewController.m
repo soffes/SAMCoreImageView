@@ -12,7 +12,8 @@
 #import <SAMCoreImageView/SAMCoreImageView.h>
 
 @interface DemoViewController ()
-@property (nonatomic) SAMCoreImageView *imageView;
+@property (nonatomic, readonly) SAMCoreImageView *imageView;
+@property (nonatomic, readonly) UISlider *slider;
 @property (nonatomic) CIImage *inputImage;
 @end
 
@@ -21,12 +22,23 @@
 #pragma mark - Accessors
 
 @synthesize imageView = _imageView;
+@synthesize slider = _slider;
 
 - (SAMCoreImageView *)imageView {
 	if (!_imageView) {
-		_imageView = [[SAMCoreImageView alloc] initWithFrame:CGRectMake(0.0f, 20.0f, 320.0f, 320.0f)];
+		_imageView = [[SAMCoreImageView alloc] init];
 	}
 	return _imageView;
+}
+
+
+- (UISlider *)slider {
+	if (!_slider) {
+		_slider = [[UISlider alloc] init];
+		[_slider addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
+		_slider.minimumValue = -1.0f;
+	}
+	return _slider;
 }
 
 
@@ -46,11 +58,21 @@
 	self.inputImage = [CIImage imageWithCGImage:[UIImage imageNamed:@"image"].CGImage];
 
 	[self.view addSubview:self.imageView];
+	[self.view addSubview:self.slider];
+}
 
-	UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(10.0f, 350.0f, 300.0f, 32.0f)];
-	[slider addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
-	slider.minimumValue = -1.0f;
-	[self.view addSubview:slider];
+
+- (void)viewDidLayoutSubviews {
+	[super viewDidLayoutSubviews];
+
+	CGSize size = self.view.bounds.size;
+
+	if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+		self.imageView.frame = CGRectMake(0.0f, 20.0f, size.width, size.width);
+	} else {
+		self.imageView.frame = CGRectMake(roundf((size.width - 200.0f) / 2.0f), 20.0f, 200.0f, 200.0f);
+	}
+	self.slider.frame = CGRectMake(self.imageView.frame.origin.x + 10.0f, CGRectGetMaxY(self.imageView.frame) + 10.0f, self.imageView.frame.size.width - 20.0f, 32.0f);
 }
 
 
