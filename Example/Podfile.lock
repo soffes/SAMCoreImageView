@@ -1,0 +1,14 @@
+PODS:
+  - SAMCoreImageView (0.1.0)
+
+DEPENDENCIES:
+  - SAMCoreImageView (from `..`)
+
+EXTERNAL SOURCES:
+  SAMCoreImageView:
+    :path: ..
+
+SPEC CHECKSUMS:
+  SAMCoreImageView: befb161a48bf04c97c6e2f22a18e58593bcc878c
+
+COCOAPODS: 0.29.0
