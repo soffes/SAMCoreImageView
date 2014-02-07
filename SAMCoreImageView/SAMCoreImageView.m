@@ -78,15 +78,15 @@
 		CAEAGLLayer *eaglLayer = (CAEAGLLayer *)self.layer;
 		eaglLayer.opaque = YES;
 
+		[self eaglContext];
 		[self setup];
 	}
 	return self;
 }
 
 
-- (void)willMoveToWindow:(UIWindow *)newWindow {
-	[super willMoveToWindow:newWindow];
-	self.contentScaleFactor = newWindow.screen.scale;
+- (void)didMoveToWindow {
+	[super didMoveToWindow];
 
 	[self tearDown];
 	[self setup];
@@ -113,7 +113,7 @@
 #pragma mark - Private
 
 - (void)drawView {
-    if (!self.image || !self.window) {
+    if (!self.image) {
         return;
     }
 
@@ -121,7 +121,7 @@
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	CGSize size = self.bounds.size;
-	CGFloat scale = self.contentScaleFactor;
+	CGFloat scale = self.window.screen.scale;
 	CGRect rect = CGRectMake(0.0f, 0.0f, size.width * scale, size.height * scale);
 
     [self.context drawImage:self.image inRect:rect fromRect:self.image.extent];
@@ -132,11 +132,9 @@
 
 
 - (void)setup {
-	if (!self.window) {
+	if (!self.window || CGSizeEqualToSize(self.bounds.size, CGSizeZero)) {
 		return;
 	}
-
-	[self eaglContext];
 
 	glGenFramebuffers(1, &_frameBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
@@ -158,13 +156,14 @@
 
 	glBindRenderbuffer(GL_RENDERBUFFER, _renderBuffer);
 
-	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER) ;
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if(status != GL_FRAMEBUFFER_COMPLETE) {
 		NSLog(@"ERROR: Failed to make complete framebuffer object %x", status);
-	} else {
-		glViewport(0, 0, _backingWidth, _backingHeight);
-		[self drawView];
+		return;
 	}
+
+	glViewport(0, 0, _backingWidth, _backingHeight);
+	[self drawView];
 }
 
 
