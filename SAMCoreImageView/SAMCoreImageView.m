@@ -115,12 +115,12 @@
 #pragma mark - Private
 
 - (void)drawView {
+	glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	
     if (!self.image) {
         return;
     }
-
-    glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	CGSize size = self.bounds.size;
 	CGFloat scale = self.contentScaleFactor;
