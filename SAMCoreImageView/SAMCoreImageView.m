@@ -88,6 +88,8 @@
 - (void)didMoveToWindow {
 	[super didMoveToWindow];
 
+	self.contentScaleFactor = self.window.screen.scale;
+
 	[self tearDown];
 	[self setup];
 }
@@ -121,7 +123,7 @@
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	CGSize size = self.bounds.size;
-	CGFloat scale = self.window.screen.scale;
+	CGFloat scale = self.contentScaleFactor;
 	CGRect rect = CGRectMake(0.0f, 0.0f, size.width * scale, size.height * scale);
 
     [self.context drawImage:self.image inRect:rect fromRect:self.image.extent];
