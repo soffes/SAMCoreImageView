@@ -9,6 +9,6 @@ Pod::Spec.new do |spec|
 
   spec.platform = :ios
   spec.requires_arc = true
-  spec.frameworks = 'UIKit', 'CoreGraphics', 'CoreImage'
+  spec.frameworks = 'Foundation', 'UIKit', 'CoreGraphics', 'CoreImage', 'GLKit', 'OpenGLES'
   spec.source_files = 'SAMCoreImageView'
 end
