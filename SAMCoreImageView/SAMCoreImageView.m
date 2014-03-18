@@ -7,6 +7,7 @@
 //
 
 #import "SAMCoreImageView.h"
+#import <SAMContentMode/SAMContentMode.h>
 
 @import OpenGLES;
 @import CoreImage;
@@ -56,11 +57,18 @@
 	CGSize size = self.bounds.size;
 	CGFloat scale = self.contentScaleFactor;
 	CGRect frame = CGRectMake(0.0f, 0.0f, size.width * scale, size.height * scale);
-    [self.ciContext drawImage:self.image inRect:frame fromRect:self.image.extent];
+	rect = SAMRectForContentMode(frame, self.contentMode, self.image.extent);
+    [self.ciContext drawImage:self.image inRect:frame fromRect:rect];
 }
 
 
 - (void)layoutSubviews {
+	[self display];
+}
+
+
+- (void)setContentMode:(UIViewContentMode)contentMode {
+	[super setContentMode:contentMode];
 	[self display];
 }
 
