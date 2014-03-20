@@ -12,10 +12,6 @@
 @import OpenGLES;
 @import CoreImage;
 
-@interface SAMCoreImageView ()
-@property (nonatomic, readonly) CIContext *ciContext;
-@end
-
 @implementation SAMCoreImageView
 
 
@@ -56,9 +52,9 @@
 
 	CGSize size = self.bounds.size;
 	CGFloat scale = self.contentScaleFactor;
-	CGRect frame = CGRectMake(0.0f, 0.0f, size.width * scale, size.height * scale);
-	rect = SAMRectForContentMode(frame, self.contentMode, self.image.extent);
-    [self.ciContext drawImage:self.image inRect:frame fromRect:rect];
+	CGRect bounds = CGRectMake(0.0f, 0.0f, size.width * scale, size.height * scale);
+	CGRect imageRect = [self imageRectForBounds:self.bounds];
+    [self.ciContext drawImage:self.image inRect:bounds fromRect:imageRect];
 }
 
 
@@ -80,6 +76,14 @@
 		kCIContextUseSoftwareRenderer: @NO,
 		kCIContextWorkingColorSpace: [NSNull null]
 	};
+}
+
+
+- (CGRect)imageRectForBounds:(CGRect)bounds {
+	bounds.size.width *= self.contentScaleFactor;
+	bounds.size.height *= self.contentScaleFactor;
+
+	return SAMRectForContentMode(bounds, self.contentMode, self.image.extent);
 }
 
 @end
