@@ -59,7 +59,9 @@
 
 
 - (void)layoutSubviews {
-	[self display];
+	if (self.contentMode == UIViewContentModeRedraw) {
+		[self display];
+	}
 }
 
 
