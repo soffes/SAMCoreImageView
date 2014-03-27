@@ -1,1 +1,1 @@
-pod 'SAMCoreImageView', :path => '..'
+pod 'SAMCoreImageView', :path => '../'

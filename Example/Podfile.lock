@@ -1,14 +1,17 @@
 PODS:
-  - SAMCoreImageView (0.1.0)
+  - SAMContentMode (0.1.0)
+  - SAMCoreImageView (0.1.1):
+    - SAMContentMode
 
 DEPENDENCIES:
-  - SAMCoreImageView (from `..`)
+  - SAMCoreImageView (from `../`)
 
 EXTERNAL SOURCES:
   SAMCoreImageView:
-    :path: ..
+    :path: ../
 
 SPEC CHECKSUMS:
-  SAMCoreImageView: befb161a48bf04c97c6e2f22a18e58593bcc878c
+  SAMContentMode: 46539afe936f04047e541714d4ace595b65c09eb
+  SAMCoreImageView: 7e3f8c6d0fc792b710056a5c0f09939a82b0a499
 
 COCOAPODS: 0.29.0
