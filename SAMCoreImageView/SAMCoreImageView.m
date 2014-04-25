@@ -12,6 +12,10 @@
 @import OpenGLES;
 @import CoreImage;
 
+@interface SAMCoreImageView ()
+@property (nonatomic, readwrite) CIContext *ciContext;
+@end
+
 @implementation SAMCoreImageView
 
 
@@ -29,7 +33,7 @@
 
 - (void)setImage:(CIImage *)image {
 	_image = image;
-	[self display];
+	[self _display];
 }
 
 
@@ -59,15 +63,14 @@
 
 
 - (void)layoutSubviews {
-	if (self.contentMode == UIViewContentModeRedraw) {
-		[self display];
-	}
+	self.ciContext = nil;
+	[self _display];
 }
 
 
 - (void)setContentMode:(UIViewContentMode)contentMode {
 	[super setContentMode:contentMode];
-	[self display];
+	[self _display];
 }
 
 
@@ -86,6 +89,17 @@
 	bounds.size.height *= self.contentScaleFactor;
 
 	return SAMRectForContentMode(bounds, self.contentMode, self.image.extent);
+}
+
+
+#pragma mark - Private
+
+- (void)_display {
+	if (self.enableSetNeedsDisplay) {
+		[self setNeedsDisplay];
+	} else {
+		[self display];
+	}
 }
 
 @end
