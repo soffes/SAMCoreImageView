@@ -50,13 +50,7 @@
 
 
 - (void)drawRect:(CGRect)rect {
-	if (!self.window) {
-		return;
-	}
-
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
-	if (!self.image) {
+	if (!self.window || !self.image) {
         return;
     }
 
