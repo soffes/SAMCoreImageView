@@ -8,7 +8,7 @@
 
 #import "DemoViewController.h"
 
-#import <CoreImage/CoreImage.h>
+@import CoreImage;
 #import <SAMCoreImageView/SAMCoreImageView.h>
 
 @interface DemoViewController ()

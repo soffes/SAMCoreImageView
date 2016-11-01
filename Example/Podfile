@@ -1,1 +1,3 @@
-pod 'SAMCoreImageView', :path => '../'
+target 'Example' do
+  pod 'SAMCoreImageView', :path => '../'
+end

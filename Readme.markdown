@@ -15,6 +15,11 @@ imageView.image = [someFilter outputImage];
 SAMCoreImageView's `contentMode` behaves just like UIImageView's so go nuts. Internally, it uses [SAMContentMode](https://github.com/soffes/SAMContentMode) to do its magic.
 
 
+## Running the Example
+
+`cd` into the `Example` directory and run `pod install`. Then open `Example.xcworkspace` and build like normal. The performance on the simulator isn't great. Try it on a device.
+
+
 ## Limitations
 
 The only thing SAMCoreImageView doesn't do well is resizing. If you need to resize the view, I recommend destroying it and making a new one for now. I started working on a fix for this, but couldn't get it to work right just yet.
